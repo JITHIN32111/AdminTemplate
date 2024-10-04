@@ -55,10 +55,17 @@ export const editMemberSchema = Yup.object({
 
 
  export const editProfileSchema = Yup.object({
-    fullName: Yup.string().required("Full Name is required"),
-    email: Yup.string().email("Invalid email address").required("E-mail is required"),
-    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    fullName: Yup.string(),
+    email: Yup.string().email("Invalid email address"),
+    password: Yup.string().min(6, "Password must be at least 6 characters"),
   });
 
 
 
+  export const AddRateSchema = Yup.object({
+    rate: Yup.number()
+      .required("Rate is required")
+      .positive("Rate must be a positive number")
+     
+      .min(0, "Rate must be at least 1"),
+  });

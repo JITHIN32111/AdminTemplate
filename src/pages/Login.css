@@ -1,0 +1,12 @@
+/* Custom CSS for the curved background */
+.curved-bg {
+    position: absolute;
+    background-color: #fff;
+    width: 150%;
+    height: 150%;
+    border-radius: 50%;
+    top: -75%;
+    left: -75%;
+    transform: rotate(-30deg);
+  }
+  

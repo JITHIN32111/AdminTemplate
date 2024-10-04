@@ -4,15 +4,9 @@ import {
   FaChevronRight,
   FaEye,
   FaEyeSlash,
-  FaEdit,
-  FaTrash,
 } from "react-icons/fa";
-import EditMember from "../../modals/EditMember";
-import Swal from "sweetalert2/dist/sweetalert2.js";
-import "sweetalert2/src/sweetalert2.scss";
-import { FcInvite } from "react-icons/fc";
-
-function AllMembersTable() {
+import AddMember from "../../modals/AddMember";
+function TransactionTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,42 +18,17 @@ function AllMembersTable() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
- 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleAddMember = () => {
-  };
-
- 
-
-  const handleEdit = (userId) => {
     setIsModalOpen(true);
-
-    // Implement edit functionality here
-    console.log(`Edit user with ID: ${userId}`);
   };
 
-  const handleDelete = (userId) => {
-
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success"
-        });
-      }
-    });
-    // Implement delete functionality here
-    console.log(`Delete user with ID: ${userId}`);
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   // Dummy data for users
@@ -106,13 +75,13 @@ function AllMembersTable() {
   });
 
   return (
-    <div className="md:-mt-10 -mt-3 lg:px-24 md:px-10 px-4 pb-5">
-      <h1 className="text-gray-800 text-md xs:text-xl pl-3 sm:pl-0 md:text-2xl lg:text-2xl font-semibold mb-5 mt-8 sm:mt-12 md:mt-14 lg:mt-16">
-        Users List
+    <div className="md:-mt-10 -mt-3  lg:px-24 md:px-10 px-4 pb-5">
+      <h1 className="text-blue-700   text-md xs:text-xl pl-3 sm:pl-0 md:text-2xl lg:text-2xl font-bold mb-5 mt-8 sm:mt-12 md:mt-14 lg:mt-24">
+      {""}
       </h1>
 
       {/* Search Input */}
-      <div className="mb-4 flex flex-row justify-between">
+      <div className="mb-4 flex flex-row justify-between ">
         <input
           type="text"
           placeholder="Search by name..."
@@ -122,7 +91,7 @@ function AllMembersTable() {
         />
         <button
           onClick={handleAddMember}
-          className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500 rounded-lg shadow-lg text-zinc-100 font-semibold transition duration-300 ease-in-out transform hover:scale-105"
+          className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500 rounded-lg shadow-2xl text-zinc-100 font-semibold transition duration-300 ease-in-out transform hover:scale-105"
         >
           Add Member
         </button>
@@ -131,7 +100,7 @@ function AllMembersTable() {
       {/* Table */}
       <div className="relative overflow-x-auto shadow-lg rounded-lg border border-gray-200">
         <table className="w-full text-sm text-left text-gray-300">
-          <thead className="text-xs text-zinc-500 font-extralight bg-gray-300">
+          <thead className="text-xs text-white font-extralight bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500">
             <tr className="h-14">
               <th scope="col" className="px-6 py-3">
                 #
@@ -146,32 +115,27 @@ function AllMembersTable() {
                 Role
               </th>
               <th scope="col" className="px-6 py-3">
-                Actions
+                Status
               </th>
             </tr>
           </thead>
-          <tbody className="text-gray-900 font-medium">
+          <tbody className="text-black font-medium">
             {filteredUsers.map((user, index) => (
               <tr key={user.id} className="bg-zinc-100 mt-2 border">
-                <th scope="row" className="px-6 py-4 font-medium text-white">
+                <th scope="row" className="px-6 py-4 font-medium text-blue-900">
                   {index + 1}
                 </th>
                 <td className="px-6 py-4">{user.name}</td>
                 <td className="px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">{user.role}</td>
-                <td className="px-6 py-4 flex gap-2">
-                  <button
-                    onClick={() => handleEdit(user.id)}
-                    className="text-blue-500 text-lg   hover:text-blue-700"
+                <td className="px-6 py-4">
+                  <span
+                    className={`px-3 py-1 rounded-full ${
+                      user.status === "Active" ? "bg-green-500" : "bg-red-500"
+                    } text-white`}
                   >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    className="text-red-500 text-lg hover:text-red-700"
-                  >
-                    <FaTrash />
-                  </button>
+                    {user.status}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -192,10 +156,16 @@ function AllMembersTable() {
 
       {/* Modal */}
       {isModalOpen && (
-        <EditMember  isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
+        <AddMember
+          closeModal={closeModal}
+          setShowPassword={setShowPassword}
+          showPassword={showPassword}
+          setShowConfirmPassword={setShowConfirmPassword}
+          showConfirmPassword={showConfirmPassword}
+        />
       )}
     </div>
   );
 }
 
-export default AllMembersTable;
+export default TransactionTable;

@@ -1,14 +1,20 @@
 import React from "react";
-import adminIcon from "../../../src/assets/adminIcon.png";
+import adminIcon from "../../../src/assets/logo02.png";
 import { useFormik } from "formik";
-
-import {editProfileSchema} from '../../schema'
-// Initial values
+import authAPI from "../../apis/authApi";
+import { editProfileSchema } from '../../schema';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+// Initial values from localStorage
+const name = localStorage.getItem('name');
+const email = localStorage.getItem('email');
 const editProfileinitialValues = {
-  fullName: "John Doe",
-  email: "john.doe@example.com",
-  password: "password123",
+  fullName: name,
+  email: email,
+  password: '', // Optional: you can include it based on your requirements
 };
+
+const { editAdminProfile } = authAPI();
 
 const EditProfile = () => {
   const {
@@ -18,17 +24,52 @@ const EditProfile = () => {
     handleBlur,
     handleChange,
     handleSubmit,
+    setFieldValue,
+    resetForm, // Allows resetting the entire form after submission
   } = useFormik({
     initialValues: editProfileinitialValues,
     validationSchema: editProfileSchema,
     onSubmit: async (values) => {
-      console.log(values);
-      // Handle form submission
+      const data = {
+        name: values.fullName,
+        email: values.email,
+        password: values.password, // Default password, adjust as needed
+      };
+      console.log(data);
+
+
+      try {
+        const response = await editAdminProfile(data);
+
+        // If the API call succeeds, update localStorage and the form values
+        if (response) {
+          // Update localStorage
+          localStorage.setItem('name', values.fullName);
+          localStorage.setItem('email', values.email);
+
+          // Optionally, you can reset the password field after submission
+          resetForm({
+            values: { fullName: values.fullName, email: values.email, password: '' }
+          });
+          toast.success("Profile updated successfully!", {
+            autoClose: 1000,
+
+          });
+          console.log("Profile updated successfully!");
+        }
+      } catch (e) {
+        toast.error("Error updating profile!", {
+          autoClose: 1000,
+
+        });
+        console.log("Error updating profile:", e);
+      }
     },
   });
 
   return (
     <div className="flex items-center justify-center min-h-screen -mt-12">
+      <ToastContainer />
       <div className="bg-white rounded-xl shadow-xl p-6 w-full sm:w-2/3">
         {/* Avatar and Admin Details */}
         <div className="flex flex-col items-center">
@@ -39,7 +80,7 @@ const EditProfile = () => {
               className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full border-4 border-white shadow-md sm:shadow-lg bg-white"
             />
           </div>
-          <span className="-mt-9 mb-3 text-gray-600 font-medium text-lg">
+          <span className="-mt-9 mb-3 font-bold sm:text-xl text-lg text-blue-700">
             Edit Information
           </span>
           {/* Input Fields */}
@@ -96,14 +137,13 @@ const EditProfile = () => {
 
             {/* Submit Button */}
             <div className="flex justify-center">
-            <button
-              type="submit"
-              className="mt-4 text-center px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500 transition-all duration-300 text-white rounded-full shadow-md"
-            >
-              Save Changes
-            </button>
+              <button
+                type="submit"
+                className="mt-4 text-center px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500 transition-all duration-300 text-white rounded-full shadow-md"
+              >
+                Save Changes
+              </button>
             </div>
-          
           </form>
         </div>
       </div>
